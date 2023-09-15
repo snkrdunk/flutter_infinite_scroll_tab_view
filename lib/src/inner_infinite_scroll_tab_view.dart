@@ -94,12 +94,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   double get indicatorHeight =>
       widget.indicatorHeight ?? widget.separator?.width ?? 2.0;
 
-  late final _indicatorAnimationController =
-      AnimationController(vsync: this, duration: _tabAnimationDuration)
-        ..addListener(() {
-          if (_indicatorAnimation == null) return;
-          _indicatorSize.value = _indicatorAnimation!.value;
-        });
+  late final _indicatorAnimationController;
   Animation<double>? _indicatorAnimation;
 
   double _totalTabSizeCache = 0.0;
@@ -192,6 +187,13 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   @override
   void initState() {
     super.initState();
+
+    _indicatorAnimationController =
+      AnimationController(vsync: this, duration: _tabAnimationDuration)
+        ..addListener(() {
+          if (_indicatorAnimation == null) return;
+          _indicatorSize.value = _indicatorAnimation!.value;
+        });
 
     calculateTabBehaviorElements(widget.textScaleFactor);
 
