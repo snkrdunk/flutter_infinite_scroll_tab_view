@@ -1,7 +1,7 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import '../infinite_scroll_tab_view.dart';
 import 'cycled_list_view.dart';
@@ -30,6 +30,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.tabPadding,
     required this.forceFixedTabWidth,
     required this.fixedTabWidthFraction,
+    this.physics = const PageScrollPhysics(),
   }) : super(key: key);
 
   final Size size;
@@ -50,6 +51,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final double tabPadding;
   final bool forceFixedTabWidth;
   final double fixedTabWidthFraction;
+  final ScrollPhysics physics;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -189,11 +191,11 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
     super.initState();
 
     _indicatorAnimationController =
-      AnimationController(vsync: this, duration: _tabAnimationDuration)
-        ..addListener(() {
-          if (_indicatorAnimation == null) return;
-          _indicatorSize.value = _indicatorAnimation!.value;
-        });
+        AnimationController(vsync: this, duration: _tabAnimationDuration)
+          ..addListener(() {
+            if (_indicatorAnimation == null) return;
+            _indicatorSize.value = _indicatorAnimation!.value;
+          });
 
     calculateTabBehaviorElements(widget.textScaleFactor);
 
@@ -324,7 +326,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
             scrollDirection: Axis.horizontal,
             contentCount: widget.contentLength,
             controller: _pageController,
-            physics: const PageScrollPhysics(),
+            physics: widget.physics,
             itemBuilder: (context, modIndex, rawIndex) => SizedBox(
               width: widget.size.width,
               child: ValueListenableBuilder<int>(

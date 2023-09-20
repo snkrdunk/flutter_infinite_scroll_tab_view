@@ -35,6 +35,7 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.size,
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
+    this.physics = const PageScrollPhysics(),
   }) : super(key: key);
 
   /// A length of tabs and pages.
@@ -131,6 +132,8 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// This will be ignored when [forceFixedTabWidth] is false.
   final double fixedTabWidthFraction;
 
+  final ScrollPhysics physics;
+
   @override
   Widget build(BuildContext context) {
     if (indicatorHeight != null) {
@@ -156,6 +159,7 @@ class InfiniteScrollTabView extends StatelessWidget {
       tabPadding: tabPadding,
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
+      physics: physics,
     );
   }
 }
