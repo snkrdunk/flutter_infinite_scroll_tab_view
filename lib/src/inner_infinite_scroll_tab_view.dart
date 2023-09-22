@@ -96,7 +96,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   double get indicatorHeight =>
       widget.indicatorHeight ?? widget.separator?.width ?? 2.0;
 
-  late final _indicatorAnimationController;
+  late final AnimationController _indicatorAnimationController;
   Animation<double>? _indicatorAnimation;
 
   double _totalTabSizeCache = 0.0;
@@ -265,7 +265,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
     _indicatorAnimation =
         Tween(begin: _indicatorSize.value, end: _tabTextSizes[modIndex])
             .animate(_indicatorAnimationController);
-    _indicatorAnimationController.forward(from: 0);
+    _indicatorAnimationController.forward(from: 0.0);
 
     // 現在のスクロール位置とページインデックスを取得
     final currentOffset = _pageController.offset;
