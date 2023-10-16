@@ -187,6 +187,17 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   }
 
   @override
+  void didUpdateWidget(InnerInfiniteScrollTabView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.contentLength != widget.contentLength) {
+      final textScaleFactor = MediaQuery.textScaleFactorOf(context);
+      setState(() {
+        calculateTabBehaviorElements(textScaleFactor);
+      });
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
