@@ -30,6 +30,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.tabPadding,
     required this.forceFixedTabWidth,
     required this.fixedTabWidthFraction,
+    this.stackedContent,
     this.physics = const PageScrollPhysics(),
   }) : super(key: key);
 
@@ -52,6 +53,11 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final bool forceFixedTabWidth;
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
+
+  /// [_TabContent] に [Stack] で重ねて表示するウィジェット。
+  ///
+  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
+  final Widget? stackedContent;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -366,19 +372,24 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
               valueListenable: _selectedIndex,
               builder: (context, index, _) => ValueListenableBuilder<bool>(
                 valueListenable: _isTabPositionAligned,
-                builder: (context, tab, _) => _TabContent(
-                  isTabPositionAligned: tab,
-                  selectedIndex: index,
-                  indicatorColor: widget.indicatorColor,
-                  tabPadding: widget.tabPadding,
-                  modIndex: modIndex,
-                  tabBuilder: widget.tabBuilder,
-                  separator: widget.separator,
-                  tabWidth: widget.forceFixedTabWidth
-                      ? _fixedTabWidth
-                      : _tabTextSizes[modIndex],
-                  indicatorHeight: indicatorHeight,
-                  indicatorWidth: _tabTextSizes[modIndex],
+                builder: (context, tab, _) => Stack(
+                  children: [
+                    _TabContent(
+                      isTabPositionAligned: tab,
+                      selectedIndex: index,
+                      indicatorColor: widget.indicatorColor,
+                      tabPadding: widget.tabPadding,
+                      modIndex: modIndex,
+                      tabBuilder: widget.tabBuilder,
+                      separator: widget.separator,
+                      tabWidth: widget.forceFixedTabWidth
+                          ? _fixedTabWidth
+                          : _tabTextSizes[modIndex],
+                      indicatorHeight: indicatorHeight,
+                      indicatorWidth: _tabTextSizes[modIndex],
+                    ),
+                    if (widget.stackedContent != null) widget.stackedContent!,
+                  ],
                 ),
               ),
             ),
