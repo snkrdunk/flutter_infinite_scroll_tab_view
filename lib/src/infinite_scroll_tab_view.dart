@@ -36,6 +36,7 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
     this.physics = const PageScrollPhysics(),
+    this.stackedContent,
   }) : super(key: key);
 
   /// A length of tabs and pages.
@@ -134,6 +135,11 @@ class InfiniteScrollTabView extends StatelessWidget {
 
   final ScrollPhysics physics;
 
+  /// タブラベルに [Stack] で重ねて表示するウィジェット。
+  ///
+  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
+  final Widget? stackedContent;
+
   @override
   Widget build(BuildContext context) {
     if (indicatorHeight != null) {
@@ -160,6 +166,7 @@ class InfiniteScrollTabView extends StatelessWidget {
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,
+      stackedContent: stackedContent,
     );
   }
 }
