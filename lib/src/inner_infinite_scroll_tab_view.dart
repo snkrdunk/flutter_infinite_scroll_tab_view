@@ -15,6 +15,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.size,
     required this.contentLength,
     required this.tabBuilder,
+    required this.stackedContentOnTabBuilder,
     required this.pageBuilder,
     this.onTabTap,
     this.separator,
@@ -30,13 +31,18 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.tabPadding,
     required this.forceFixedTabWidth,
     required this.fixedTabWidthFraction,
-    this.stackedContent,
     this.physics = const PageScrollPhysics(),
   }) : super(key: key);
 
   final Size size;
   final int contentLength;
   final SelectIndexedTextBuilder tabBuilder;
+
+  /// [_TabContent] のタブラベル部分に [Stack] で重ねて表示するウィジェット。
+  ///
+  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
+  final SelectIndexedWidgetBuilder? stackedContentOnTabBuilder;
+
   final SelectIndexedWidgetBuilder pageBuilder;
   final IndexedTapCallback? onTabTap;
   final BorderSide? separator;
@@ -53,11 +59,6 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final bool forceFixedTabWidth;
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
-
-  /// [_TabContent] に [Stack] で重ねて表示するウィジェット。
-  ///
-  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
-  final Widget? stackedContent;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -372,24 +373,20 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
               valueListenable: _selectedIndex,
               builder: (context, index, _) => ValueListenableBuilder<bool>(
                 valueListenable: _isTabPositionAligned,
-                builder: (context, tab, _) => Stack(
-                  children: [
-                    _TabContent(
-                      isTabPositionAligned: tab,
-                      selectedIndex: index,
-                      indicatorColor: widget.indicatorColor,
-                      tabPadding: widget.tabPadding,
-                      modIndex: modIndex,
-                      tabBuilder: widget.tabBuilder,
-                      separator: widget.separator,
-                      tabWidth: widget.forceFixedTabWidth
-                          ? _fixedTabWidth
-                          : _tabTextSizes[modIndex],
-                      indicatorHeight: indicatorHeight,
-                      indicatorWidth: _tabTextSizes[modIndex],
-                    ),
-                    if (widget.stackedContent != null) widget.stackedContent!,
-                  ],
+                builder: (context, tab, _) => _TabContent(
+                  isTabPositionAligned: tab,
+                  selectedIndex: index,
+                  indicatorColor: widget.indicatorColor,
+                  tabPadding: widget.tabPadding,
+                  modIndex: modIndex,
+                  tabBuilder: widget.tabBuilder,
+                  stackedContentOnTabBuilder: widget.stackedContentOnTabBuilder,
+                  separator: widget.separator,
+                  tabWidth: widget.forceFixedTabWidth
+                      ? _fixedTabWidth
+                      : _tabTextSizes[modIndex],
+                  indicatorHeight: indicatorHeight,
+                  indicatorWidth: _tabTextSizes[modIndex],
                 ),
               ),
             ),
@@ -435,6 +432,7 @@ class _TabContent extends StatelessWidget {
     required this.tabPadding,
     required this.indicatorColor,
     required this.tabBuilder,
+    required this.stackedContentOnTabBuilder,
     this.separator,
     required this.indicatorHeight,
     required this.indicatorWidth,
@@ -447,6 +445,7 @@ class _TabContent extends StatelessWidget {
   final double tabPadding;
   final Color indicatorColor;
   final SelectIndexedTextBuilder tabBuilder;
+  final SelectIndexedWidgetBuilder? stackedContentOnTabBuilder;
   final BorderSide? separator;
   final double indicatorHeight;
   final double indicatorWidth;
@@ -485,7 +484,10 @@ class _TabContent extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
+        if (stackedContentOnTabBuilder != null)
+          stackedContentOnTabBuilder!(
+              context, modIndex, selectedIndex == modIndex),
       ],
     );
   }

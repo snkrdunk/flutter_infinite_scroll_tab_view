@@ -23,6 +23,7 @@ class InfiniteScrollTabView extends StatelessWidget {
     Key? key,
     required this.contentLength,
     required this.tabBuilder,
+    this.stackedContentOnTabBuilder,
     required this.pageBuilder,
     this.onTabTap,
     this.separator,
@@ -36,7 +37,6 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
     this.physics = const PageScrollPhysics(),
-    this.stackedContent,
   }) : super(key: key);
 
   /// A length of tabs and pages.
@@ -56,6 +56,11 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// `index` is modulo number of real index by [contentLength].
   /// `isSelected` is the state that indicates whether the tab is selected or not.
   final SelectIndexedTextBuilder tabBuilder;
+
+  /// [tabBuilder] で表示されるタブラベルに [Stack] で重ねて表示するウィジェット。
+  ///
+  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
+  final SelectIndexedWidgetBuilder? stackedContentOnTabBuilder;
 
   /// A callback for build page contents that can scroll infinitely.
   ///
@@ -135,11 +140,6 @@ class InfiniteScrollTabView extends StatelessWidget {
 
   final ScrollPhysics physics;
 
-  /// タブラベルに [Stack] で重ねて表示するウィジェット。
-  ///
-  /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
-  final Widget? stackedContent;
-
   @override
   Widget build(BuildContext context) {
     if (indicatorHeight != null) {
@@ -150,6 +150,7 @@ class InfiniteScrollTabView extends StatelessWidget {
       size: MediaQuery.of(context).size,
       contentLength: contentLength,
       tabBuilder: tabBuilder,
+      stackedContentOnTabBuilder: stackedContentOnTabBuilder,
       pageBuilder: pageBuilder,
       onTabTap: onTabTap,
       separator: separator,
@@ -166,7 +167,6 @@ class InfiniteScrollTabView extends StatelessWidget {
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,
-      stackedContent: stackedContent,
     );
   }
 }
