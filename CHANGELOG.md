@@ -1,6 +1,6 @@
 ## 1.0.7
 
-- `InnerInfiniteScrollTabView` に任意の `Widget? stackedContent` を指定してタブラベルに重ねて任意の UI を表示できるようにしました。
+- `InnerInfiniteScrollTabView` に `Widget? stackedContentOnTabBuilder` を指定してタブラベルに重ねて任意の UI を表示できるようにしました。
 - `.gitignore` に `pubspec.lock` を追加しました。
 
 ## 1.0.3
