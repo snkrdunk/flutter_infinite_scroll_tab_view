@@ -33,6 +33,8 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.indicatorHeight,
     this.tabHeight = 44.0,
     this.tabHorizontalPadding = 12.0,
+    this.tabTopPadding = 0,
+    this.tabBottomPadding = 0,
     this.size,
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
@@ -116,6 +118,22 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// いる。
   final double tabHorizontalPadding;
 
+  /// タブラベルの上方向の余白。
+  ///
+  /// デフォルトでは `0` が設定されている。
+  ///
+  /// [tabHeight] の中で [tabTopPadding] に設定した大きさの余白が、[tabBuilder] で与えた
+  /// [Text] ウィジェットの上側に設定される。
+  final double tabTopPadding;
+
+  /// タブラベルの下方向の余白。
+  ///
+  /// デフォルトでは `0` が設定されている。
+  ///
+  /// [tabHeight] の中で [tabTopPadding] に設定した大きさの余白が、[tabBuilder] で与えた
+  /// [Text] ウィジェットの下側に設定される。
+  final double tabBottomPadding;
+
   /// The size constraint of this widget.
   ///
   /// If this is null, then `MediaQuery.of(context).size` is used as default.
@@ -166,6 +184,8 @@ class InfiniteScrollTabView extends StatelessWidget {
       defaultLocale: Localizations.localeOf(context),
       tabHeight: tabHeight,
       tabHorizontalPadding: tabHorizontalPadding,
+      tabTopPadding: tabTopPadding,
+      tabBottomPadding: tabBottomPadding,
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,
