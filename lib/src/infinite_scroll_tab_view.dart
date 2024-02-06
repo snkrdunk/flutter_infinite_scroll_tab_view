@@ -32,7 +32,9 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.indicatorColor = Colors.pinkAccent,
     this.indicatorHeight,
     this.tabHeight = 44.0,
-    this.tabPadding = 12.0,
+    this.tabHorizontalPadding = 12.0,
+    this.tabTopPadding = 0,
+    this.tabBottomPadding = 0,
     this.size,
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
@@ -107,12 +109,30 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// Defaults to 44.0.
   final double tabHeight;
 
-  /// The padding value of each tab contents.
+  /// タブラベルの左右方向の余白。
   ///
-  /// Defaults to 12.0.
-  /// This value sets as horizontal padding. For example, specify 12.0 then
-  /// the tabs will have padding as `EdgeInsets.symmetric(horizontal: 12.0)`.
-  final double tabPadding;
+  /// デフォルトでは `12.0` が設定されている。
+  ///
+  /// [tabBuilder] で与えた [Text] ウィジェットの左右側に設定され、
+  /// [InnerInfiniteScrollTabView] の中では水平方向のタブ移動の移動量の計算にも使用されて
+  /// いる。
+  final double tabHorizontalPadding;
+
+  /// タブラベルの上方向の余白。
+  ///
+  /// デフォルトでは `0` が設定されている。
+  ///
+  /// [tabHeight] の中で [tabTopPadding] に設定した大きさの余白が、[tabBuilder] で与えた
+  /// [Text] ウィジェットの上側に設定される。
+  final double tabTopPadding;
+
+  /// タブラベルの下方向の余白。
+  ///
+  /// デフォルトでは `0` が設定されている。
+  ///
+  /// [tabHeight] の中で [tabTopPadding] に設定した大きさの余白が、[tabBuilder] で与えた
+  /// [Text] ウィジェットの下側に設定される。
+  final double tabBottomPadding;
 
   /// The size constraint of this widget.
   ///
@@ -163,7 +183,9 @@ class InfiniteScrollTabView extends StatelessWidget {
       indicatorHeight: indicatorHeight,
       defaultLocale: Localizations.localeOf(context),
       tabHeight: tabHeight,
-      tabPadding: tabPadding,
+      tabHorizontalPadding: tabHorizontalPadding,
+      tabTopPadding: tabTopPadding,
+      tabBottomPadding: tabBottomPadding,
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,

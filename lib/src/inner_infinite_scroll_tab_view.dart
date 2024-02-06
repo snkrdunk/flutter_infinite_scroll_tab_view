@@ -28,7 +28,9 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     this.indicatorHeight,
     required this.defaultLocale,
     required this.tabHeight,
-    required this.tabPadding,
+    required this.tabHorizontalPadding,
+    required this.tabTopPadding,
+    required this.tabBottomPadding,
     required this.forceFixedTabWidth,
     required this.fixedTabWidthFraction,
     this.physics = const PageScrollPhysics(),
@@ -55,7 +57,9 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final double? indicatorHeight;
   final Locale defaultLocale;
   final double tabHeight;
-  final double tabPadding;
+  final double tabHorizontalPadding;
+  final double tabTopPadding;
+  final double tabBottomPadding;
   final bool forceFixedTabWidth;
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
@@ -152,7 +156,8 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
         textScaleFactor: text.textScaleFactor ?? textScaleFactor,
         textDirection: widget.textDirection,
       )..layout();
-      final calculatedWidth = layoutedText.size.width + widget.tabPadding * 2;
+      final calculatedWidth =
+          layoutedText.size.width + widget.tabHorizontalPadding * 2;
       final sizeConstraint =
           widget.forceFixedTabWidth ? _fixedTabWidth : widget.size.width;
       _tabTextSizes.add(math.min(calculatedWidth, sizeConstraint));
@@ -377,7 +382,9 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
                   isTabPositionAligned: tab,
                   selectedIndex: index,
                   indicatorColor: widget.indicatorColor,
-                  tabPadding: widget.tabPadding,
+                  tabHorizontalPadding: widget.tabHorizontalPadding,
+                  tabTopPadding: widget.tabTopPadding,
+                  tabBottomPadding: widget.tabBottomPadding,
                   modIndex: modIndex,
                   tabBuilder: widget.tabBuilder,
                   stackedContentOnTabBuilder: widget.stackedContentOnTabBuilder,
@@ -429,7 +436,9 @@ class _TabContent extends StatelessWidget {
     required this.isTabPositionAligned,
     required this.selectedIndex,
     required this.modIndex,
-    required this.tabPadding,
+    required this.tabHorizontalPadding,
+    required this.tabTopPadding,
+    required this.tabBottomPadding,
     required this.indicatorColor,
     required this.tabBuilder,
     required this.stackedContentOnTabBuilder,
@@ -442,7 +451,9 @@ class _TabContent extends StatelessWidget {
   final int modIndex;
   final int selectedIndex;
   final bool isTabPositionAligned;
-  final double tabPadding;
+  final double tabHorizontalPadding;
+  final double tabTopPadding;
+  final double tabBottomPadding;
   final Color indicatorColor;
   final SelectIndexedTextBuilder tabBuilder;
   final SelectIndexedWidgetBuilder? stackedContentOnTabBuilder;
@@ -458,7 +469,12 @@ class _TabContent extends StatelessWidget {
       children: [
         Container(
           width: tabWidth,
-          padding: EdgeInsets.symmetric(horizontal: tabPadding),
+          padding: EdgeInsets.only(
+            left: tabHorizontalPadding,
+            right: tabHorizontalPadding,
+            top: tabTopPadding,
+            bottom: tabBottomPadding,
+          ),
           decoration: BoxDecoration(
             border: Border(bottom: separator ?? BorderSide.none),
           ),

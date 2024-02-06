@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:infinite_scroll_tab_view/infinite_scroll_tab_view.dart';
 import 'package:infinite_scroll_tab_view/src/inner_infinite_scroll_tab_view.dart';
@@ -43,7 +42,7 @@ void main() {
           MaterialApp(
             home: InfiniteScrollTabView(
               contentLength: strings.length,
-              tabPadding: 4.0,
+              tabHorizontalPadding: 4.0,
               tabBuilder: (index, _) => Text(
                 strings[index],
                 style: const TextStyle(
@@ -113,7 +112,7 @@ void main() {
           MaterialApp(
             home: InfiniteScrollTabView(
               contentLength: strings.length,
-              tabPadding: 4.0,
+              tabHorizontalPadding: 4.0,
               tabBuilder: (index, _) => Text(
                 strings[index],
                 style: const TextStyle(
