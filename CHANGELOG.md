@@ -1,3 +1,8 @@
+## 1.0.8
+
+- **BREAKING**: `InfiniteScrollTabView` の `tabPadding` を `tabHorizontalPadding` にリネームしました。
+- `InfiniteScrollTabView` のタブラベルの上下の余白を指定するための `tabTopPadding`, `tabBottomPadding` を追加しました。
+
 ## 1.0.7
 
 - `InnerInfiniteScrollTabView` に `Widget? stackedContentOnTabBuilder` を指定してタブラベルに重ねて任意の UI を表示できるようにしました。
