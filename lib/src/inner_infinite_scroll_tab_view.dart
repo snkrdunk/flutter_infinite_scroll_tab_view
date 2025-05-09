@@ -34,6 +34,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.forceFixedTabWidth,
     required this.fixedTabWidthFraction,
     this.physics = const PageScrollPhysics(),
+    this.cacheExtent,
   }) : super(key: key);
 
   final Size size;
@@ -63,6 +64,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final bool forceFixedTabWidth;
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
+  final double? cacheExtent;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -350,6 +352,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
             contentCount: widget.contentLength,
             controller: _pageController,
             physics: widget.physics,
+            cacheExtent: widget.cacheExtent,
             itemBuilder: (context, modIndex, rawIndex) => SizedBox(
               width: widget.size.width,
               child: ValueListenableBuilder<int>(

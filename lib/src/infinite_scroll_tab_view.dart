@@ -39,6 +39,7 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.forceFixedTabWidth = false,
     this.fixedTabWidthFraction = 0.5,
     this.physics = const PageScrollPhysics(),
+    this.cacheExtent,
   }) : super(key: key);
 
   /// A length of tabs and pages.
@@ -159,6 +160,13 @@ class InfiniteScrollTabView extends StatelessWidget {
   final double fixedTabWidthFraction;
 
   final ScrollPhysics physics;
+  
+  /// The extent of the viewport in the scrollable axis relative to the
+  /// applied scroll offset for caching purposes.
+  ///
+  /// This improves performance by preventing rebuild of elements far away from
+  /// the visible area.
+  final double? cacheExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +197,7 @@ class InfiniteScrollTabView extends StatelessWidget {
       forceFixedTabWidth: forceFixedTabWidth,
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,
+      cacheExtent: cacheExtent,
     );
   }
 }
