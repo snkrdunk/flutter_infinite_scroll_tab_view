@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 
 import 'inner_infinite_scroll_tab_view.dart';
 
-/// A type of callback to build [Widget] on specified index.
+/// 指定されたインデックスで [Widget] を構築するためのコールバックの型。
 typedef SelectIndexedWidgetBuilder = Widget Function(
     BuildContext context, int index, bool isSelected);
 
-/// A type of callback to build [Text] Widget on specified index.
+/// 指定されたインデックスで [Text] Widget を構築するためのコールバックの型。
 typedef SelectIndexedTextBuilder = Text Function(int index, bool isSelected);
 
-/// A type of callback to execute processing on tapped tab.
+/// タップされたタブで処理を実行するためのコールバックの型。
 typedef IndexedTapCallback = void Function(int index);
 
-/// A widget for display combo of tabs and pages.
+/// タブとページの組み合わせを表示するためのウィジェット。
 ///
-/// Internally, the tabs and pages will build as just Scrollable elements like
-/// `ListView`. But these have massive index range from [double.negativeInfinity]
-/// to [double.infinity], so that these can scroll infinitely.
+/// 内部的には、タブとページは `ListView` のような単なるスクロール可能な要素として構築されます。
+/// しかし、これらは [double.negativeInfinity] から [double.infinity] までの広大なインデックス範囲を持っているため、
+/// 無限にスクロールできます。
 class InfiniteScrollTabView extends StatelessWidget {
-  /// Creates a tab view widget that can scroll infinitely.
+  /// 無限にスクロールできるタブビューウィジェットを作成します。
   const InfiniteScrollTabView({
     Key? key,
     required this.contentLength,
@@ -42,22 +42,21 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.cacheExtent,
   }) : super(key: key);
 
-  /// A length of tabs and pages.
+  /// タブとページの長さ。
   ///
-  /// This value is shared between tabs and pages, so those must have same
-  /// content length.
+  /// この値はタブとページで共有されるため、同じコンテンツ長である必要があります。
   ///
-  /// Otherwise, if this value is less than tab contents, [tabBuilder] output
-  /// will be repeated in [contentLength].
+  /// そうでない場合、この値がタブのコンテンツより小さい場合、[tabBuilder] の出力は
+  /// [contentLength] 内で繰り返されます。
   final int contentLength;
 
-  /// A callback for build tab contents that can scroll infinitely.
+  /// 無限にスクロールできるタブコンテンツを構築するためのコールバック。
   ///
-  /// This must return [Text] Widget as specified by the type.
+  /// 型によって指定された [Text] Widget を返す必要があります。
   ///
-  /// See: [SelectIndexedTextBuilder]
-  /// `index` is modulo number of real index by [contentLength].
-  /// `isSelected` is the state that indicates whether the tab is selected or not.
+  /// 参照: [SelectIndexedTextBuilder]
+  /// `index` は実際のインデックスを [contentLength] で割った余りです。
+  /// `isSelected` はタブが選択されているかどうかを示す状態です。
   final SelectIndexedTextBuilder tabBuilder;
 
   /// [tabBuilder] で表示されるタブラベルに [Stack] で重ねて表示するウィジェット。
@@ -65,49 +64,49 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// 典型的には [Positioned] を使って、タブの上にバッジを表示するなどの目的で使用する。
   final SelectIndexedWidgetBuilder? stackedContentOnTabBuilder;
 
-  /// A callback for build page contents that can scroll infinitely.
+  /// 無限にスクロールできるページコンテンツを構築するためのコールバック。
   ///
-  /// See: [SelectIndexedWidgetBuilder]
-  /// `index` is modulo number of real index by [contentLength].
-  /// `isSelected` is the state that indicates whether the tab is selected or not.
+  /// 参照: [SelectIndexedWidgetBuilder]
+  /// `index` は実際のインデックスを [contentLength] で割った余りです。
+  /// `isSelected` はページが選択されているかどうかを示す状態です。
   final SelectIndexedWidgetBuilder pageBuilder;
 
-  /// A callback for tapped tab element.
+  /// タップされたタブ要素のコールバック。
   ///
-  /// `index` is modulo number of real index by [contentLength].
+  /// `index` は実際のインデックスを [contentLength] で割った余りです。
   final IndexedTapCallback? onTabTap;
 
-  /// The border specification that displays between tabs and pages.
+  /// タブとページの間に表示される境界線の仕様。
   ///
-  /// If this is null, any border line will not be displayed.
+  /// これが null の場合、境界線は表示されません。
   final BorderSide? separator;
 
-  /// The color of tab list.
+  /// タブリストの色。
   ///
-  /// If this is null, the list background color will become [Material] default.
+  /// これが null の場合、リストの背景色は [Material] のデフォルトになります。
   final Color? backgroundColor;
 
-  /// A callback on changed selected page.
+  /// 選択されたページが変更されたときのコールバック。
   ///
-  /// This will called by both tab tap occurred and page swipe occurred.
+  /// これは、タブのタップとページのスワイプの両方で呼び出されます。
   final ValueChanged<int>? onPageChanged;
 
-  /// The color of indicator that shows selected page.
+  /// 選択されたページを示すインジケータの色。
   ///
-  /// Defaults to [Colors.pinkAccent], and must not be null.
+  /// デフォルトは [Colors.pinkAccent] で、null であってはなりません。
   final Color indicatorColor;
 
-  /// The height of indicator.
+  /// インジケータの高さ。
   ///
-  /// If this is null, the indicator height is aligned to [separator] height, or
-  /// it also null, then fallbacks to 2.0.
+  /// これが null の場合、インジケータの高さは [separator] の高さに合わせられます。
+  /// それも null の場合は 2.0 にフォールバックします。
   ///
-  /// This must 1.0 or higher.
+  /// これは 1.0 以上である必要があります。
   final double? indicatorHeight;
 
-  /// The height of tab contents.
+  /// タブコンテンツの高さ。
   ///
-  /// Defaults to 44.0.
+  /// デフォルトは 44.0 です。
   final double tabHeight;
 
   /// タブラベルの左右方向の余白。
@@ -135,37 +134,34 @@ class InfiniteScrollTabView extends StatelessWidget {
   /// [Text] ウィジェットの下側に設定される。
   final double tabBottomPadding;
 
-  /// The size constraint of this widget.
+  /// このウィジェットのサイズ制約。
   ///
-  /// If this is null, then `MediaQuery.of(context).size` is used as default.
-  /// This value should specify only in some rare case, testing or something
-  /// like that.
-  /// Internally this is only used for get page width, but this value determines
-  /// entire widget's width.
+  /// これが null の場合、デフォルトで `MediaQuery.of(context).size` が使用されます。
+  /// この値は、テストなどのまれな場合にのみ指定する必要があります。
+  /// 内部的には、これはページの幅を取得するためにのみ使用されますが、この値は
+  /// ウィジェット全体の幅を決定します。
   final Size? size;
 
-  /// The flag of using fixed tab width.
+  /// 固定タブ幅を使用するかどうかのフラグ。
   ///
-  /// When enable this, the tabs size will align fixed size that calculated from
-  /// [size] with [fixedTabWidthFraction].
+  /// これを有効にすると、タブのサイズは [size] と [fixedTabWidthFraction] から計算された
+  /// 固定サイズに揃えられます。
   ///
-  /// If the tab content width exceeds fixed width, the content will be resized
-  /// by [FittedBox] with [BoxFit.contain].
+  /// タブのコンテンツ幅が固定幅を超える場合、コンテンツは [FittedBox] と
+  /// [BoxFit.contain] によってサイズ変更されます。
   final bool forceFixedTabWidth;
 
-  /// The value of fraction when fixed tab size used.
+  /// 固定タブサイズが使用される場合の割合の値。
   ///
-  /// Defaults to 0.5.
-  /// This will be ignored when [forceFixedTabWidth] is false.
+  /// デフォルトは 0.5 です。
+  /// [forceFixedTabWidth] が false の場合、これは無視されます。
   final double fixedTabWidthFraction;
 
   final ScrollPhysics physics;
   
-  /// The extent of the viewport in the scrollable axis relative to the
-  /// applied scroll offset for caching purposes.
+  /// キャッシュ目的で適用されたスクロールオフセットに対するスクロール可能軸のビューポートの範囲。
   ///
-  /// This improves performance by preventing rebuild of elements far away from
-  /// the visible area.
+  /// これにより、表示領域から遠く離れた要素の再構築を防ぐことでパフォーマンスが向上します。
   final double? cacheExtent;
 
   @override
