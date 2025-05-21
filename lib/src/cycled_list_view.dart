@@ -7,7 +7,7 @@ typedef ModuloIndexedWidgetBuilder = Widget Function(
     BuildContext context, int modIndex, int rawIndex);
 
 class CycledListView extends StatefulWidget {
-  /// See [ListView.builder]
+  /// [ListView.builder] を参照してください。
   const CycledListView.builder({
     Key? key,
     this.scrollDirection = Axis.vertical,
@@ -29,52 +29,52 @@ class CycledListView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
   }) : super(key: key);
 
-  /// See: [ScrollView.scrollDirection]
+  /// [ScrollView.scrollDirection] を参照してください。
   final Axis scrollDirection;
 
-  /// See: [ScrollView.reverse]
+  /// [ScrollView.reverse] を参照してください。
   final bool reverse;
 
-  /// See: [ScrollView.controller]
+  /// [ScrollView.controller] を参照してください。
   final CycledScrollController? controller;
 
-  /// See: [ScrollView.physics]
+  /// [ScrollView.physics] を参照してください。
   final ScrollPhysics? physics;
 
-  /// See: [BoxScrollView.padding]
+  /// [BoxScrollView.padding] を参照してください。
   final EdgeInsets? padding;
 
-  /// See: [ListView.builder]
+  /// [ListView.builder] を参照してください。
   final ModuloIndexedWidgetBuilder itemBuilder;
 
-  /// See: [SliverChildBuilderDelegate.childCount]
+  /// [SliverChildBuilderDelegate.childCount] を参照してください。
   final int? itemCount;
 
-  /// See: [ScrollView.cacheExtent]
+  /// [ScrollView.cacheExtent] を参照してください。
   final double? cacheExtent;
 
-  /// See: [ScrollView.anchor]
+  /// [ScrollView.anchor] を参照してください。
   final double anchor;
 
-  /// See: [SliverChildBuilderDelegate.addAutomaticKeepAlives]
+  /// [SliverChildBuilderDelegate.addAutomaticKeepAlives] を参照してください。
   final bool addAutomaticKeepAlives;
 
-  /// See: [SliverChildBuilderDelegate.addRepaintBoundaries]
+  /// [SliverChildBuilderDelegate.addRepaintBoundaries] を参照してください。
   final bool addRepaintBoundaries;
 
-  /// See: [SliverChildBuilderDelegate.addSemanticIndexes]
+  /// [SliverChildBuilderDelegate.addSemanticIndexes] を参照してください。
   final bool addSemanticIndexes;
 
-  /// See: [ScrollView.dragStartBehavior]
+  /// [ScrollView.dragStartBehavior] を参照してください。
   final DragStartBehavior dragStartBehavior;
 
-  /// See: [ScrollView.keyboardDismissBehavior]
+  /// [ScrollView.keyboardDismissBehavior] を参照してください。
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
 
-  /// See: [ScrollView.restorationId]
+  /// [ScrollView.restorationId] を参照してください。
   final String? restorationId;
 
-  /// See: [ScrollView.clipBehavior]
+  /// [ScrollView.clipBehavior] を参照してください。
   final Clip clipBehavior;
 
   final int contentCount;
@@ -202,9 +202,9 @@ class _CycledListViewState extends State<CycledListView> {
   }
 }
 
-/// Same as a [ScrollController] except it provides [ScrollPosition] objects with infinite bounds.
+/// [ScrollController] と同じですが、無限の境界を持つ [ScrollPosition] オブジェクトを提供します。
 class CycledScrollController extends ScrollController {
-  /// Creates a new [CycledScrollController]
+  /// 新しい [CycledScrollController] を作成します。
   CycledScrollController({
     double initialScrollOffset = 0.0,
     bool keepScrollOffset = true,
