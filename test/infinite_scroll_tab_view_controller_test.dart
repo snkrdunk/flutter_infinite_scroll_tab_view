@@ -5,12 +5,16 @@ import 'package:infinite_scroll_tab_view/infinite_scroll_tab_view.dart';
 void main() {
   const tabs = ['A', 'B', 'C', 'D'];
 
-  Widget buildTarget(InfiniteScrollTabViewController controller) {
+  Widget buildTarget(
+    InfiniteScrollTabViewController controller, {
+    ValueChanged<int>? onPageChanged,
+  }) {
     return MaterialApp(
       home: Scaffold(
         body: InfiniteScrollTabView(
           controller: controller,
           contentLength: tabs.length,
+          onPageChanged: onPageChanged,
           tabBuilder: (index, isSelected) => Text(tabs[index]),
           pageBuilder: (context, index, isSelected) =>
               Center(child: Text('page ${tabs[index]}')),
@@ -61,6 +65,36 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(controller.selectedIndex, 0);
+    });
+
+    testWidgets('animateToIndex では通過するタブで onPageChanged が呼ばれない。',
+        (tester) async {
+      final controller = InfiniteScrollTabViewController();
+      final changedIndexes = <int>[];
+      await tester.pumpWidget(
+        buildTarget(controller, onPageChanged: changedIndexes.add),
+      );
+
+      final future = controller.animateToIndex(3);
+      await tester.pumpAndSettle();
+      await future;
+
+      expect(changedIndexes, [3]);
+      expect(controller.selectedIndex, 3);
+    });
+
+    testWidgets('jumpToIndex でも onPageChanged は一度だけ呼ばれる。', (tester) async {
+      final controller = InfiniteScrollTabViewController();
+      final changedIndexes = <int>[];
+      await tester.pumpWidget(
+        buildTarget(controller, onPageChanged: changedIndexes.add),
+      );
+
+      await controller.jumpToIndex(2);
+      await tester.pumpAndSettle();
+
+      expect(changedIndexes, [2]);
+      expect(controller.selectedIndex, 2);
     });
 
     testWidgets('ウィジェットが破棄されると接続も外れる。', (tester) async {

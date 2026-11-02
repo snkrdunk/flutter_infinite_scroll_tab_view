@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 
 import '../infinite_scroll_tab_view.dart';
 import 'cycled_list_view.dart';
-import 'infinite_scroll_tab_view_controller.dart';
 
 const _tabAnimationDuration = Duration(milliseconds: 550);
 
@@ -84,6 +83,12 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
 
   final ValueNotifier<bool> _isContentChangingByTab = ValueNotifier(false);
   bool _isTabForceScrolling = false;
+
+  /// [moveToIndex] によるページ移動中かどうか。
+  ///
+  /// 移動中は、途中で通過するタブで [InnerInfiniteScrollTabView.onPageChanged] や
+  /// ハプティクスが発火しないように抑制する。移動先のタブでの通知は [moveToIndex] が行う。
+  bool _isMovingByController = false;
 
   late double _previousTextScaleFactor = widget.textScaleFactor;
 
@@ -229,15 +234,29 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
         _selectedIndex.value, index, widget.contentLength);
     final targetPageOffset = _pageController.offset + move * widget.size.width;
 
-    if (animate) {
-      await _pageController.animateTo(
-        targetPageOffset,
-        duration: _tabAnimationDuration,
-        curve: Curves.ease,
-      );
-    } else {
-      _pageController.jumpTo(targetPageOffset);
+    // 移動中に通過するタブで onPageChanged が発火しないように抑制する。
+    // タブ側の位置とインジケーターは、その間も既存のリスナーで追従させる。
+    _isMovingByController = true;
+    try {
+      if (animate) {
+        await _pageController.animateTo(
+          targetPageOffset,
+          duration: _tabAnimationDuration,
+          curve: Curves.ease,
+        );
+      } else {
+        _pageController.jumpTo(targetPageOffset);
+      }
+    } finally {
+      _isMovingByController = false;
     }
+
+    if (!mounted) return;
+
+    // 移動先のタブで一度だけ通知する。
+    // タップ由来ではないため、ハプティクスは発生させない。
+    _selectedIndex.value = index;
+    widget.onPageChanged?.call(index);
   }
 
   @override
@@ -301,9 +320,11 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
       }
 
       if (modIndex != _selectedIndex.value) {
-        widget.onPageChanged?.call(modIndex);
         _selectedIndex.value = modIndex;
-        HapticFeedback.selectionClick();
+        if (!_isMovingByController) {
+          widget.onPageChanged?.call(modIndex);
+          HapticFeedback.selectionClick();
+        }
       }
     });
   }

@@ -83,5 +83,9 @@ controller.jumpToIndex(2);
 `controller.selectedIndex` returns the currently selected index, or `null` when the
 controller is not attached to any widget.
 
+`onPageChanged` is called only once with the destination index, even when the move
+passes through other tabs. `onTabTap` and haptic feedback are not triggered, because
+the move does not come from a tap.
+
 ## 💭 Have a question?
 If you have a question or found issue, feel free to [create an issue](https://github.com/cb-cloud/flutter_in_app_notification/issues/new).
