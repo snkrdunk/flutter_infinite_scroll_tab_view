@@ -97,6 +97,25 @@ void main() {
       expect(controller.selectedIndex, 2);
     });
 
+    testWidgets('タップによる移動中は無視され、タップ先のタブが選択される。', (tester) async {
+      final controller = InfiniteScrollTabViewController();
+      final changedIndexes = <int>[];
+      await tester.pumpWidget(
+        buildTarget(controller, onPageChanged: changedIndexes.add),
+      );
+
+      // タブバーは無限にラベルを繰り返すため、表示されているものをタップする。
+      await tester.tap(find.text('B').hitTestable().first);
+      // タップのアニメーション中に外から移動を要求する。
+      await tester.pump(const Duration(milliseconds: 10));
+      await controller.jumpToIndex(3);
+      await tester.pumpAndSettle();
+
+      expect(changedIndexes, [1]);
+      expect(controller.selectedIndex, 1);
+      expect(find.text('page B'), findsOneWidget);
+    });
+
     testWidgets('ウィジェットが破棄されると接続も外れる。', (tester) async {
       final controller = InfiniteScrollTabViewController();
       await tester.pumpWidget(buildTarget(controller));

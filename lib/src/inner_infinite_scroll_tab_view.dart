@@ -216,9 +216,14 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   /// [index] が範囲外の場合、または既にそのタブを選択している場合は何もしない。
   /// ページのスクロール位置を動かすと、タブ側の位置・インジケーター・
   /// [InnerInfiniteScrollTabView.onPageChanged] は既存のリスナーで追従する。
+  ///
+  /// タブのタップによる移動中も何もしない。[_onTapTab] は自身のアニメーションを
+  /// 始める前に [InnerInfiniteScrollTabView.onPageChanged] を呼ぶため、その通知を
+  /// 受けた利用側がこのメソッドを呼ぶと、タップ中のスクロール位置を壊してしまう。
   Future<void> moveToIndex(int index, {bool animate = true}) async {
     if (index < 0 || index >= widget.contentLength) return;
     if (index == _selectedIndex.value) return;
+    if (_isContentChangingByTab.value) return;
 
     // レイアウト前で [CycledScrollController] がまだ繋がっていない場合は、
     // 次のフレームで実行する。
