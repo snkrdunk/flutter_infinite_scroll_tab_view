@@ -35,6 +35,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.fixedTabWidthFraction,
     this.physics = const PageScrollPhysics(),
     this.cacheExtent,
+    this.controller,
   }) : super(key: key);
 
   final Size size;
@@ -65,6 +66,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
   final double? cacheExtent;
+  final InfiniteScrollTabViewController? controller;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -81,6 +83,12 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
 
   final ValueNotifier<bool> _isContentChangingByTab = ValueNotifier(false);
   bool _isTabForceScrolling = false;
+
+  /// [moveToIndex] によるページ移動中かどうか。
+  ///
+  /// 移動中は、途中で通過するタブで [InnerInfiniteScrollTabView.onPageChanged] や
+  /// ハプティクスが発火しないように抑制する。移動先のタブでの通知は [moveToIndex] が行う。
+  bool _isMovingByController = false;
 
   late double _previousTextScaleFactor = widget.textScaleFactor;
 
@@ -200,9 +208,69 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
     super.didChangeDependencies();
   }
 
+  /// 選択中のタブのインデックス。
+  int get selectedIndex => _selectedIndex.value;
+
+  /// [index] のタブへ移動する。
+  ///
+  /// [index] が範囲外の場合、または既にそのタブを選択している場合は何もしない。
+  /// ページのスクロール位置を動かすと、タブ側の位置・インジケーター・
+  /// [InnerInfiniteScrollTabView.onPageChanged] は既存のリスナーで追従する。
+  ///
+  /// タブのタップによる移動中も何もしない。[_onTapTab] は自身のアニメーションを
+  /// 始める前に [InnerInfiniteScrollTabView.onPageChanged] を呼ぶため、その通知を
+  /// 受けた利用側がこのメソッドを呼ぶと、タップ中のスクロール位置を壊してしまう。
+  Future<void> moveToIndex(int index, {bool animate = true}) async {
+    if (index < 0 || index >= widget.contentLength) return;
+    if (index == _selectedIndex.value) return;
+    if (_isContentChangingByTab.value) return;
+
+    // レイアウト前で [CycledScrollController] がまだ繋がっていない場合は、
+    // 次のフレームで実行する。
+    if (!_pageController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        moveToIndex(index, animate: animate);
+      });
+      return;
+    }
+
+    final move = calculateMoveIndexDistance(
+        _selectedIndex.value, index, widget.contentLength);
+    final targetPageOffset = _pageController.offset + move * widget.size.width;
+
+    // 移動中に通過するタブで onPageChanged が発火しないように抑制する。
+    // タブ側の位置とインジケーターは、その間も既存のリスナーで追従させる。
+    _isMovingByController = true;
+    try {
+      if (animate) {
+        await _pageController.animateTo(
+          targetPageOffset,
+          duration: _tabAnimationDuration,
+          curve: Curves.ease,
+        );
+      } else {
+        _pageController.jumpTo(targetPageOffset);
+      }
+    } finally {
+      _isMovingByController = false;
+    }
+
+    if (!mounted) return;
+
+    // 移動先のタブで一度だけ通知する。
+    // タップ由来ではないため、ハプティクスは発生させない。
+    _selectedIndex.value = index;
+    widget.onPageChanged?.call(index);
+  }
+
   @override
   void didUpdateWidget(InnerInfiniteScrollTabView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.detach(this);
+      widget.controller?.attach(this);
+    }
     if (oldWidget.contentLength != widget.contentLength) {
       final textScaleFactor = MediaQuery.textScaleFactorOf(context);
       setState(() {
@@ -214,6 +282,8 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   @override
   void initState() {
     super.initState();
+
+    widget.controller?.attach(this);
 
     _indicatorAnimationController =
         AnimationController(vsync: this, duration: _tabAnimationDuration)
@@ -255,9 +325,11 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
       }
 
       if (modIndex != _selectedIndex.value) {
-        widget.onPageChanged?.call(modIndex);
         _selectedIndex.value = modIndex;
-        HapticFeedback.selectionClick();
+        if (!_isMovingByController) {
+          widget.onPageChanged?.call(modIndex);
+          HapticFeedback.selectionClick();
+        }
       }
     });
   }
@@ -412,6 +484,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
 
   @override
   void dispose() {
+    widget.controller?.detach(this);
     _tabController.dispose();
     _pageController.dispose();
     _indicatorAnimationController.dispose();

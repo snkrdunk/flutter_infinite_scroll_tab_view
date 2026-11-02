@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'infinite_scroll_tab_view_controller.dart';
 import 'inner_infinite_scroll_tab_view.dart';
 
 /// A type of callback to build [Widget] on specified index.
@@ -40,6 +41,7 @@ class InfiniteScrollTabView extends StatelessWidget {
     this.fixedTabWidthFraction = 0.5,
     this.physics = const PageScrollPhysics(),
     this.cacheExtent,
+    this.controller,
   }) : super(key: key);
 
   /// A length of tabs and pages.
@@ -160,13 +162,18 @@ class InfiniteScrollTabView extends StatelessWidget {
   final double fixedTabWidthFraction;
 
   final ScrollPhysics physics;
-  
+
   /// The extent of the viewport in the scrollable axis relative to the
   /// applied scroll offset for caching purposes.
   ///
   /// This improves performance by preventing rebuild of elements far away from
   /// the visible area.
   final double? cacheExtent;
+
+  /// 選択タブをウィジェットの外から操作するためのコントローラー。
+  ///
+  /// Deep Link などでタブをタップせずに特定のタブへ移動したい場合に指定する。
+  final InfiniteScrollTabViewController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +205,7 @@ class InfiniteScrollTabView extends StatelessWidget {
       fixedTabWidthFraction: fixedTabWidthFraction,
       physics: physics,
       cacheExtent: cacheExtent,
+      controller: controller,
     );
   }
 }
