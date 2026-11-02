@@ -1,3 +1,7 @@
+## 1.1.0
+
+- `InfiniteScrollTabViewController` を追加しました。`InfiniteScrollTabView` の `controller` に渡すと、タブをタップせずに外部から選択タブを変更できます（`animateToIndex` / `jumpToIndex`）。
+
 ## 1.0.7
 
 - `InnerInfiniteScrollTabView` に `Widget? stackedContentOnTabBuilder` を指定してタブラベルに重ねて任意の UI を表示できるようにしました。

@@ -59,5 +59,29 @@ A Flutter package for tab view component that can scroll infinitely.
     );
    ```
 
+### Controlling the selected tab from outside
+
+Pass an `InfiniteScrollTabViewController` to change the selected tab without tapping it
+(for example when opening a specific tab from a deep link).
+
+```dart
+final controller = InfiniteScrollTabViewController();
+
+InfiniteScrollTabView(
+  controller: controller,
+  contentLength: contents.length,
+  tabBuilder: ...,
+  pageBuilder: ...,
+);
+
+// Move to the 3rd tab.
+controller.animateToIndex(2);
+// Move without animation.
+controller.jumpToIndex(2);
+```
+
+`controller.selectedIndex` returns the currently selected index, or `null` when the
+controller is not attached to any widget.
+
 ## 💭 Have a question?
 If you have a question or found issue, feel free to [create an issue](https://github.com/cb-cloud/flutter_in_app_notification/issues/new).

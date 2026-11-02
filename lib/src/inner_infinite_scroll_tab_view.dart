@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../infinite_scroll_tab_view.dart';
 import 'cycled_list_view.dart';
+import 'infinite_scroll_tab_view_controller.dart';
 
 const _tabAnimationDuration = Duration(milliseconds: 550);
 
@@ -35,6 +36,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
     required this.fixedTabWidthFraction,
     this.physics = const PageScrollPhysics(),
     this.cacheExtent,
+    this.controller,
   }) : super(key: key);
 
   final Size size;
@@ -65,6 +67,7 @@ class InnerInfiniteScrollTabView extends StatefulWidget {
   final double fixedTabWidthFraction;
   final ScrollPhysics physics;
   final double? cacheExtent;
+  final InfiniteScrollTabViewController? controller;
 
   @override
   InnerInfiniteScrollTabViewState createState() =>
@@ -200,9 +203,50 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
     super.didChangeDependencies();
   }
 
+  /// 選択中のタブのインデックス。
+  int get selectedIndex => _selectedIndex.value;
+
+  /// [index] のタブへ移動する。
+  ///
+  /// [index] が範囲外の場合、または既にそのタブを選択している場合は何もしない。
+  /// ページのスクロール位置を動かすと、タブ側の位置・インジケーター・
+  /// [InnerInfiniteScrollTabView.onPageChanged] は既存のリスナーで追従する。
+  Future<void> moveToIndex(int index, {bool animate = true}) async {
+    if (index < 0 || index >= widget.contentLength) return;
+    if (index == _selectedIndex.value) return;
+
+    // レイアウト前で [CycledScrollController] がまだ繋がっていない場合は、
+    // 次のフレームで実行する。
+    if (!_pageController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        moveToIndex(index, animate: animate);
+      });
+      return;
+    }
+
+    final move = calculateMoveIndexDistance(
+        _selectedIndex.value, index, widget.contentLength);
+    final targetPageOffset = _pageController.offset + move * widget.size.width;
+
+    if (animate) {
+      await _pageController.animateTo(
+        targetPageOffset,
+        duration: _tabAnimationDuration,
+        curve: Curves.ease,
+      );
+    } else {
+      _pageController.jumpTo(targetPageOffset);
+    }
+  }
+
   @override
   void didUpdateWidget(InnerInfiniteScrollTabView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?.detach(this);
+      widget.controller?.attach(this);
+    }
     if (oldWidget.contentLength != widget.contentLength) {
       final textScaleFactor = MediaQuery.textScaleFactorOf(context);
       setState(() {
@@ -214,6 +258,8 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
   @override
   void initState() {
     super.initState();
+
+    widget.controller?.attach(this);
 
     _indicatorAnimationController =
         AnimationController(vsync: this, duration: _tabAnimationDuration)
@@ -412,6 +458,7 @@ class InnerInfiniteScrollTabViewState extends State<InnerInfiniteScrollTabView>
 
   @override
   void dispose() {
+    widget.controller?.detach(this);
     _tabController.dispose();
     _pageController.dispose();
     _indicatorAnimationController.dispose();
